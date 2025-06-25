@@ -1,6 +1,9 @@
+name: .NET CI
+
 on:
   push:
     branches: [ "main", "task01" ]
+    branches: [ "main", "task01", "task02" ]
   pull_request:
     branches: [ "main" ]
 
@@ -9,17 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
-    
+        dotnet-version: 8.0.x
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
     - name: Restore
-      run: dotnet restore task01/task01.csproj
-      
+      run: dotnet restore
     - name: Build
       run: dotnet build --no-restore --configuration Release
-      
     - name: Test
-      run: dotnet test task01tests/task01tests.csproj --no-build --configuration Release
+      run: dotnet test --no-build --verbosity normal
