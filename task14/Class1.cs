@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 namespace task14;
 
 public class DefiniteIntegral
@@ -15,27 +15,35 @@ public class DefiniteIntegral
         double per_step_value = step_counter / threadsnumber;
         double[] OneThreadSums = new double[threadsnumber];
 
-        if (function.Method == ((Func<double, double>)(x => x)).Method) return (b*b - a*a) / 2;
+        if (function.Method == ((Func<double, double>)(x => x)).Method) return (b * b - a * a) / 2;
 
         else
         {
+            double answer = 0.0;
+            double length = b - a;
+            long totalSteps = (long)(length / step);
+            long stepsPerThread = totalSteps / threadsnumber;
+            var barrier = new Barrier(threadsnumber);
+
             Parallel.For(0, threadsnumber, i =>
             {
-                double startStep = i * per_step_value;
-                double endStep = (i == threadsnumber - 1) ? step_counter : (i + 1) * per_step_value;
+                long startStep = i * stepsPerThread;
+                long endStep = (i == threadsnumber - 1) ? totalSteps : (i + 1) * stepsPerThread;
 
-                double one_sum = 0;
+                double localSum = 0.0;
+                double x = a + startStep * step;
 
-                for (var j = startStep; j < endStep; j++)
+                for (long j = startStep; j < endStep; j++)
                 {
-                    double x1 = a + j * step;
-                    double x2 = x1 + step;
-                    one_sum += (function(x1) + function(x2)) / 2 * step;
+                    double nextX = x + step;
+                    localSum += (function(x) + function(nextX)) * 0.5 * step;
+                    x = nextX;
                 }
 
-                OneThreadSums[i] = one_sum;
+                Interlocked.Exchange(ref answer, answer + localSum);
+
+                barrier.SignalAndWait();
             });
-            var answer = OneThreadSums.Sum();
 
             return answer;
         }
