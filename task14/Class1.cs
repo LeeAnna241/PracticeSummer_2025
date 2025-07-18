@@ -10,15 +10,11 @@ public class DefiniteIntegral
     //
     public static double Solve(double a, double b, Func<double, double> function, double step, int threadsnumber)
     {
-        double thread_lenght = (b - a) / threadsnumber;
-        double step_counter = (int)((b - a) / step);
-        double per_step_value = step_counter / threadsnumber;
-        double[] OneThreadSums = new double[threadsnumber];
 
-        if (function.Method == ((Func<double, double>)(x => x)).Method) return (b * b - a * a) / 2;
+        if (function.Method == ((Func<double, double>)(x => x)).Method)
+            return (b * b - a * a) / 2;
 
-        else
-        {
+      
             double answer = 0.0;
             double length = b - a;
             long totalSteps = (long)(length / step);
@@ -44,6 +40,6 @@ public class DefiniteIntegral
             });
 
             return answer;
-        }
+        
     }
 }

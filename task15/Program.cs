@@ -27,7 +27,7 @@ namespace task15
 
             var bestResult = results.OrderBy(r => r.AverageTime).First();
 
-            double improvement = singleThreadTime / bestResult.AverageTime;
+            double improvement = (singleThreadTime - bestResult.AverageTime) / singleThreadTime * 100;
 
             var plt = new ScottPlot.Plot();
             plt.Add.Scatter(results.Select(r => r.AverageTime).ToArray(), threadCounts.Select(t => (double)t).ToArray());
@@ -108,7 +108,7 @@ namespace task15
                 sum += (function(x) + function(nextX)) * 0.5 * (nextX - x);
                 x = nextX;
             }
-
+            
 
             return sum;
         }
