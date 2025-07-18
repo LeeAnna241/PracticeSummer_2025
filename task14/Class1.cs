@@ -23,7 +23,6 @@ public class DefiniteIntegral
             double length = b - a;
             long totalSteps = (long)(length / step);
             long stepsPerThread = totalSteps / threadsnumber;
-            var barrier = new Barrier(threadsnumber);
 
             Parallel.For(0, threadsnumber, i =>
             {
@@ -42,7 +41,6 @@ public class DefiniteIntegral
 
                 Interlocked.Exchange(ref answer, answer + localSum);
 
-                barrier.SignalAndWait();
             });
 
             return answer;
